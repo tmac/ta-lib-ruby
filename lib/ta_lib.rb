@@ -296,10 +296,19 @@ module TALib
     begin
       setup_input_parameters(params_ptr, input_arrays, func_name)
       setup_optional_parameters(params_ptr, options, func_name)
+      lookback = calculate_lookback(params_ptr)
+      puts "Lookback: #{lookback}"
       calculate_results(params_ptr, input_arrays.first.length, func_name)
     ensure
       TA_ParamHolderFree(params_ptr)
     end
+  end
+
+  def calculate_lookback(params_ptr)
+    lookback_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
+    ret_code = TA_GetLookback(params_ptr, lookback_ptr)
+    check_ta_return_code(ret_code)
+    lookback_ptr[0, Fiddle::SIZEOF_INT].unpack1("l")
   end
 
   def validate_inputs!(arrays)
@@ -314,7 +323,7 @@ module TALib
     raise TALibError, "Input arrays cannot be empty" if sizes.first.zero?
 
     arrays.each do |arr|
-      raise TALibError, "Input arrays must contain only numbers" unless arr.all? { |x| x.is_a?(Numeric) }
+      raise TALibError, "Input arrays must contain only numbers" unless arr.flatten.all? { |x| x.is_a?(Numeric) }
     end
   end
 
@@ -575,20 +584,27 @@ module TALib
   end
 
   def setup_price_inputs(params_ptr, index, price_data, flags)
-    open = prepare_price_component(price_data, :open, flags, TA_FLAGS[:TA_InputFlags][:TA_IN_PRICE_OPEN])
-    high = prepare_price_component(price_data, :high, flags, TA_FLAGS[:TA_InputFlags][:TA_IN_PRICE_HIGH])
-    low = prepare_price_component(price_data, :low, flags, TA_FLAGS[:TA_InputFlags][:TA_IN_PRICE_LOW])
-    close = prepare_price_component(price_data, :close, flags, TA_FLAGS[:TA_InputFlags][:TA_IN_PRICE_CLOSE])
-    volume = prepare_price_component(price_data, :volume, flags, TA_FLAGS[:TA_InputFlags][:TA_IN_PRICE_VOLUME])
-    open_interest = prepare_price_component(price_data, :open_interest, flags, TA_FLAGS[:TA_InputFlags][:TA_IN_PRICE_OPENINTEREST])
+    required_flags = extract_flags(flags, :TA_InputFlags)
+    flag_to_index = {
+      TA_IN_PRICE_OPEN: 0,
+      TA_IN_PRICE_HIGH: 1,
+      TA_IN_PRICE_LOW: 2,
+      TA_IN_PRICE_CLOSE: 3,
+      TA_IN_PRICE_VOLUME: 4,
+      TA_IN_PRICE_OPENINTEREST: 5
+    }
 
-    TA_SetInputParamPricePtr(params_ptr, index, open, high, low, close, volume, open_interest)
-  end
+    data_pointers = Array.new(6) { nil }
 
-  def prepare_price_component(price_data, key, flags, flag_constant)
-    return nil unless price_data.is_a?(Hash) && (flags & flag_constant) != 0
+    flag_to_index.each_key do |flag|
+      data_pointers[flag_to_index[flag]] = if required_flags.include?(flag)
+                                             prepare_double_array(price_data[required_flags.index(flag)])
+                                           else
+                                             Fiddle::Pointer.malloc(0)
+                                           end
+    end
 
-    prepare_double_array(price_data[key])
+    TA_SetInputParamPricePtr(params_ptr, index, *data_pointers)
   end
 
   initialize_ta_lib

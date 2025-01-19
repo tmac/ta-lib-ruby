@@ -840,10 +840,9 @@ RSpec.describe TALib do
       it_behaves_like "ta_lib_input_validation", :accbands
 
       it "calculates Acceleration Bands" do
-        price_data = [high_prices, low_prices, close_prices]
-        result = described_class.accbands(price_data)
+        result = described_class.accbands([high_prices, low_prices, close_prices], time_period: 2)
         expect(result).to be_a(Hash)
-        expect(result.keys).to match_array([:upper_band, :middle_band, :lower_band])
+        expect(result.keys).to contain_exactly(:upper_band, :middle_band, :lower_band)
         expect(result[:upper_band]).to be_an(Array)
         expect(result[:middle_band]).to be_an(Array)
         expect(result[:lower_band]).to be_an(Array)
@@ -860,8 +859,7 @@ RSpec.describe TALib do
       end
 
       it "returns empty arrays when period exceeds data length" do
-        result = described_class.accbands([high_prices, low_prices, close_prices], 
-                                        time_period: high_prices.length + 1)
+        result = described_class.accbands([high_prices, low_prices, close_prices], time_period: high_prices.length + 1)
         expect(result[:upper_band]).to be_empty
         expect(result[:middle_band]).to be_empty
         expect(result[:lower_band]).to be_empty
