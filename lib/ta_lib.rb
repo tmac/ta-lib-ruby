@@ -15,7 +15,7 @@ module TALib
                "#{brew_prefix}/lib/libta-lib.dylib"
              when /linux/
                "libta-lib.so"
-             when /win32|mingw32/
+             when /cygwin|mswin|mingw|bccwin|wince|emx/
                "C:/Program Files/TA-Lib/bin/ta-lib.dll"
              else
                raise "Unsupported platform"
