@@ -158,7 +158,6 @@ module TALib
     }
   }.freeze
 
-  extern "const char *TA_GetVersionString(void)"
   extern "int TA_Initialize()"
   extern "int TA_Shutdown()"
   extern "int TA_GroupTableAlloc(TA_StringTable**)"
@@ -203,10 +202,6 @@ module TALib
       flags_set << k if (value & v) != 0
     end
     flags_set
-  end
-
-  def ta_lib_version
-    TA_GetVersionString().to_s
   end
 
   def group_table
