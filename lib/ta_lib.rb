@@ -5,7 +5,20 @@ module TALib
   VERSION = "0.1.0".freeze
 
   extend Fiddle::Importer
-  dlload "libta-lib.so"
+
+  lib_path = case RUBY_PLATFORM
+             when /darwin/
+               brew_prefix = `brew --prefix`.chomp
+               "#{brew_prefix}/lib/libta-lib.dylib"
+             when /linux/
+               "libta-lib.so"
+             when /win32|mingw32/
+               "C:/Program Files/TA-Lib/bin/ta-lib.dll"
+             else
+               raise "Unsupported platform"
+             end
+
+  dlload lib_path
 
   class TALibError < StandardError; end
 

@@ -1,0 +1,11 @@
+[config]
+model="deepseek/deepseek-chat"
+fallback_models=["deepseek/deepseek-chat"]
+custom_model_max_tokens=64000
+max_model_tokens=64000
+
+[github_action_config]
+# auto_review = true    # set as env var in .github/workflows/pr-agent.yaml
+# auto_describe = true  # set as env var in .github/workflows/pr-agent.yaml
+# auto_improve = true   # set as env var in .github/workflows/pr-agent.yaml
+# pr_actions = ['opened', 'reopened', 'ready_for_review', 'review_requested']
