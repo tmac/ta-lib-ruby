@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require "fiddle"
 require "fiddle/import"
 
+# Ruby FFI wrapper for TA-Lib (Technical Analysis Library)
 module TALib
-  VERSION = "0.1.0".freeze
+  VERSION = "0.1.0"
 
   extend Fiddle::Importer
 
@@ -41,6 +44,16 @@ module TALib
   TA_NOT_SUPPORTED              = 16
   TA_INTERNAL_ERROR             = 5000
   TA_UNKNOWN_ERR                = 0xFFFF
+
+  # {0,"SMA"},
+  # {1,"EMA"},
+  # {2,"WMA"},
+  # {3,"DEMA" },
+  # {4,"TEMA" },
+  # {5,"TRIMA"},
+  # {6,"KAMA" },
+  # {7,"MAMA" },
+  # {8,"T3"}
 
   typealias "TA_Real", "double"
   typealias "TA_Integer", "int"
@@ -100,21 +113,21 @@ module TALib
     "TA_OutputFlags flags"
   ]
 
-  TA_Input_Price = 0
-  TA_Input_Real = 1
-  TA_Input_Integer = 2
-
-  TA_OptInput_RealRange = 0
-  TA_OptInput_RealList = 1
-  TA_OptInput_IntegerRange = 2
-  TA_OptInput_IntegerList = 3
-
-  TA_Output_Real = 0
-  TA_Output_Integer = 1
+  TA_PARAM_TYPE = {
+    TA_Input_Price: 0,
+    TA_Input_Real: 1,
+    TA_Input_Integer: 2,
+    TA_OptInput_RealRange: 0,
+    TA_OptInput_RealList: 1,
+    TA_OptInput_IntegerRange: 2,
+    TA_OptInput_IntegerList: 3,
+    TA_Output_Real: 0,
+    TA_Output_Integer: 1
+  }.freeze
 
   TA_FLAGS = {
     TA_InputFlags: {
-      TA_InputFlags: 0x00000001,
+      TA_IN_PRICE_OPEN: 0x00000001,
       TA_IN_PRICE_HIGH: 0x00000002,
       TA_IN_PRICE_LOW: 0x00000004,
       TA_IN_PRICE_CLOSE: 0x00000008,
@@ -143,7 +156,7 @@ module TALib
       TA_OUT_UPPER_LIMIT: 0x00000800,
       TA_OUT_LOWER_LIMIT: 0x00001000
     }
-  }
+  }.freeze
 
   extern "const char *TA_GetVersionString(void)"
   extern "int TA_Initialize()"
@@ -246,6 +259,8 @@ module TALib
     check_ta_return_code(ret_code)
   end
 
+  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/AbcSize
   def print_function_info(func_info)
     puts "Function Name: #{func_info["name"]}"
     puts "Function Group: #{func_info["group"]}"
@@ -263,7 +278,7 @@ module TALib
       ret_code = TA_GetInputParameterInfo(func_info["handle"], i, param_info_ptr.ref)
       check_ta_return_code(ret_code)
       param_info = TA_InputParameterInfo.new(param_info_ptr)
-      puts "  Parameter #{i+1}:"
+      puts "  Parameter #{i + 1}:"
       puts "    Name: #{param_info["paramName"]}"
       puts "    Type: #{param_info["type"]}"
       puts "    Flags: #{extract_flags(param_info["flags"], :TA_InputFlags)}"
@@ -296,7 +311,10 @@ module TALib
       puts "    Flags: #{extract_flags(param_info["flags"], :TA_OutputFlags)}"
     end
   end
+  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/AbcSize
 
+  # rubocop:disable Metrics/MethodLength
   def call_func(func_name, args)
     options = args.last.is_a?(Hash) ? args.pop : {}
     input_arrays = args
@@ -316,6 +334,7 @@ module TALib
       TA_ParamHolderFree(params_ptr)
     end
   end
+  # rubocop:enable Metrics/MethodLength
 
   def calculate_lookback(params_ptr)
     lookback_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
@@ -324,6 +343,8 @@ module TALib
     lookback_ptr[0, Fiddle::SIZEOF_INT].unpack1("l")
   end
 
+  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/PerceivedComplexity
   def validate_inputs!(arrays)
     raise TALibError, "Input arrays cannot be empty" if arrays.empty?
 
@@ -332,13 +353,14 @@ module TALib
     end
 
     sizes = arrays.map(&:length)
-    raise TALibError, "All input arrays must have the same length" unless sizes.uniq.length == 1
-    raise TALibError, "Input arrays cannot be empty" if sizes.first.zero?
+    raise TALibError, "Input arrays cannot be empty" if sizes.any?(&:zero?)
 
     arrays.each do |arr|
       raise TALibError, "Input arrays must contain only numbers" unless arr.flatten.all? { |x| x.is_a?(Numeric) }
     end
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/PerceivedComplexity
 
   def get_function_handle(func_name)
     handle_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
@@ -365,13 +387,13 @@ module TALib
 
   def set_input_parameter(params_ptr, index, array, input_info)
     case input_info["type"]
-    when TA_Input_Real
+    when TA_PARAM_TYPE[:TA_Input_Real]
       input_ptr = prepare_double_array(array)
       TA_SetInputParamRealPtr(params_ptr, index, input_ptr)
-    when TA_Input_Integer
+    when TA_PARAM_TYPE[:TA_Input_Integer]
       input_ptr = prepare_integer_array(array)
       TA_SetInputParamIntegerPtr(params_ptr, index, input_ptr)
-    when TA_Input_Price
+    when TA_PARAM_TYPE[:TA_Input_Price]
       setup_price_inputs(params_ptr, index, array, input_info["flags"])
     end
   end
@@ -402,14 +424,15 @@ module TALib
 
   def set_optional_parameter(params_ptr, index, value, type)
     case type
-    when TA_OptInput_RealRange, TA_OptInput_RealList
+    when TA_PARAM_TYPE[:TA_OptInput_RealRange], TA_PARAM_TYPE[:TA_OptInput_RealList]
       ret_code = TA_SetOptInputParamReal(params_ptr, index, value)
-    when TA_OptInput_IntegerRange, TA_OptInput_IntegerList
+    when TA_PARAM_TYPE[:TA_OptInput_IntegerRange], TA_PARAM_TYPE[:TA_OptInput_IntegerList]
       ret_code = TA_SetOptInputParamInteger(params_ptr, index, value)
     end
     check_ta_return_code(ret_code)
   end
 
+  # rubocop:disable Metrics/MethodLength
   def calculate_results(params_ptr, input_size, func_name)
     out_begin = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
     out_size = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
@@ -420,6 +443,7 @@ module TALib
       check_ta_return_code(ret_code)
 
       actual_size = out_size[0, Fiddle::SIZEOF_INT].unpack1("l")
+      puts "actual_size: #{actual_size}"
       format_output_results(output_arrays, actual_size, func_name)
     ensure
       out_begin.free
@@ -427,25 +451,28 @@ module TALib
       output_arrays.each(&:free)
     end
   end
+  # rubocop:enable Metrics/MethodLength
 
+  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/AbcSize
   def setup_output_buffers(params_ptr, size, func_name)
     func_info = function_info_map[func_name]
     output_ptrs = []
 
     func_info[:outputs].each_with_index do |output, index|
       ptr = case output["type"]
-            when TA_Output_Real
+            when TA_PARAM_TYPE[:TA_Output_Real]
               Fiddle::Pointer.malloc(Fiddle::SIZEOF_DOUBLE * size)
-            when TA_Output_Integer
+            when TA_PARAM_TYPE[:TA_Output_Integer]
               Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT * size)
             end
 
       output_ptrs << ptr
 
       ret_code =  case output["type"]
-                  when TA_Output_Real
+                  when TA_PARAM_TYPE[:TA_Output_Real]
                     TA_SetOutputParamRealPtr(params_ptr, index, ptr)
-                  when TA_Output_Integer
+                  when TA_PARAM_TYPE[:TA_Output_Integer]
                     TA_SetOutputParamIntegerPtr(params_ptr, index, ptr)
                   end
 
@@ -454,14 +481,18 @@ module TALib
 
     output_ptrs
   end
+  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/AbcSize
 
+  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/AbcSize
   def format_output_results(output_ptrs, size, func_name)
     func_info = function_info_map[func_name]
     results = output_ptrs.zip(func_info[:outputs]).map do |ptr, output|
       case output["type"]
-      when TA_Output_Real
+      when TA_PARAM_TYPE[:TA_Output_Real]
         ptr[0, Fiddle::SIZEOF_DOUBLE * size].unpack("d#{size}")
-      when TA_Output_Integer
+      when TA_PARAM_TYPE[:TA_Output_Integer]
         ptr[0, Fiddle::SIZEOF_INT * size].unpack("l#{size}")
       end
     end
@@ -473,6 +504,8 @@ module TALib
     end
     output_names.zip(results).to_h
   end
+  # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/MethodLength
 
   def function_description_xml
     TA_FunctionDescriptionXML().to_s
@@ -534,6 +567,9 @@ module TALib
         .downcase
   end
 
+  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/CyclomaticComplexity
   def check_ta_return_code(code)
     return if code == TA_SUCCESS
 
@@ -580,6 +616,9 @@ module TALib
 
     raise TALibError, error_message
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/AbcSize
 
   def initialize_ta_lib
     return if @initialized
@@ -598,23 +637,13 @@ module TALib
 
   def setup_price_inputs(params_ptr, index, price_data, flags)
     required_flags = extract_flags(flags, :TA_InputFlags)
-    flag_to_index = {
-      TA_IN_PRICE_OPEN: 0,
-      TA_IN_PRICE_HIGH: 1,
-      TA_IN_PRICE_LOW: 2,
-      TA_IN_PRICE_CLOSE: 3,
-      TA_IN_PRICE_VOLUME: 4,
-      TA_IN_PRICE_OPENINTEREST: 5
-    }
-
     data_pointers = Array.new(6) { nil }
-
-    flag_to_index.each_key do |flag|
-      data_pointers[flag_to_index[flag]] = if required_flags.include?(flag)
-                                             prepare_double_array(price_data[required_flags.index(flag)])
-                                           else
-                                             Fiddle::Pointer.malloc(0)
-                                           end
+    TA_FLAGS[:TA_InputFlags].keys[0..5].each_with_index do |flag, i|
+      data_pointers[i] = if required_flags.include?(flag)
+                           prepare_double_array(price_data[required_flags.index(flag)])
+                         else
+                           Fiddle::Pointer.malloc(0)
+                         end
     end
 
     TA_SetInputParamPricePtr(params_ptr, index, *data_pointers)
@@ -623,50 +652,3 @@ module TALib
   initialize_ta_lib
   generate_ta_functions
 end
-
-# puts TALib.group_table
-# puts TALib.function_table("Math Operators")
-# puts TALib.function_table("Math Transform")
-# puts TALib.function_info(TALib.function_info("BBANDS"))
-# TALib.each_function do |func_info|
-#   # puts func_info[]
-# end
-# prices = [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0]
-# result = TALib.call_func("SMA", [prices, { time_period: 5 }])
-# puts "开始索引: #{result[:begin_idx]}"
-# puts "SMA结果: #{result[:data].inspect}"
-# puts TALib.function_description_xml
-# puts TALib.function_info_map
-# 计算简单移动平均线
-# prices = [10.0, 11.0, 12.0, 13.0, 14.0, 15.0]
-# sma = TALib.bbands(prices, time_period: 3)
-# puts "SMA: #{sma}"
-
-# # # 计算 MACD
-# puts TALib.print_function_info(TALib.function_info("MACD"))
-# macd = TALib.macd(prices, 
-#                   fast_period: 3,
-#                   slow_period: 2,
-#                   signal_period: 1)
-# puts "MACD: #{macd}"
-
-# puts TALib.print_function_info(TALib.function_info("EMA"))
-# prices = Array.new(100) { rand(100) }
-# # 调用 EMA
-
-# prices = [1, 1, 1, 1, 1, 2, 3, 4, 5, 5, 5, 5, 5, 5]
-# puts TALib.ema(prices, time_period: 5)
-
-# require "tulirb"
-# puts Tulirb.ema([prices], period: 5)
-
-# puts ema2 == ema1[-ema1.size..-1]
-# puts ema2.join(",")
-# puts ema1.join(",")
-
-# prices = Array.new(100) { rand(100) }
-# puts TALib.print_function_info(TALib.function_info("MA"))
-# puts TALib.sma(prices, time_period: 5).join(",")
-# puts "XXXXXXXXXXXXXX"
-# puts Tulirb.sma([prices], period: 5).join(",")
-# puts TALib.sma(prices, time_period: 5).map { |x| x.round(2) } == Tulirb.sma([prices], period: 5).first.map { |x| x.round(2) }
