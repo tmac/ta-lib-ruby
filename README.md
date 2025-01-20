@@ -1,8 +1,8 @@
 # TALib
 
-TODO: Delete this and the text below, and describe your gem
+![Tests](https://github.com/Youngv/ta_lib_ffi/actions/workflows/main.yml/badge.svg)
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ta_lib`. To experiment with that code, run `bin/console` for an interactive prompt.
+Ruby FFI wrapper for TA-Lib (Technical Analysis Library)
 
 ## Installation
 

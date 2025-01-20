@@ -15,4 +15,7 @@ Layout/LineLength:
 RSpec/MultipleExpectations:
   Enabled: false
 
+Metrics/ModuleLength:
+  Enabled: false
+
 require: rubocop-rspec
