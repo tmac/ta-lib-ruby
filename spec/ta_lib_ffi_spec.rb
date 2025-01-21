@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe TALib do
+RSpec.describe TALibFFI do
   shared_examples "ta_lib_input_validation" do |method_name|
     context "when input is invalid" do
       it "raises error for empty array" do
@@ -24,7 +24,7 @@ RSpec.describe TALib do
 
   describe "Version and Initialization" do
     it "has a version number" do
-      expect(described_class::VERSION).to eq("0.1.0")
+      expect(described_class::VERSION).to eq("0.2.0")
     end
 
     it "returns a string for TA-Lib version", skip: "Not implemented under Windows" do

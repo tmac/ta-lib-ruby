@@ -1,10 +1,10 @@
-# TALib
+# TALibFFI
 
 ![Tests](https://github.com/Youngv/ta_lib_ffi/actions/workflows/main.yml/badge.svg)
 
 ## Introduction
 
-TALib is a Ruby binding for [TA-Lib](https://ta-lib.org/) (Technical Analysis Library) using FFI (Foreign Function Interface). It provides a comprehensive set of functions for technical analysis of financial market data.
+TALibFFI is a Ruby binding for [TA-Lib](https://ta-lib.org/) (Technical Analysis Library) using FFI (Foreign Function Interface). It provides a comprehensive set of functions for technical analysis of financial market data.
 
 ## Requirements
 
@@ -57,13 +57,13 @@ Or install it directly:
 ## Usage
 
 ```ruby
-require 'ta_lib'
+require 'ta_lib_ffi'
 
 # Initialize data
 prices = [10.0, 11.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0]
 
 # Calculate SMA
-puts TALib.sma(prices, time_period: 3)
+puts TALibFFI.sma(prices, time_period: 3)
 # => [11.0, 11.333333333333334, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0, 5.0]
 ```
 

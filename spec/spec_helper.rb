@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "ta_lib"
+require "ta_lib_ffi"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

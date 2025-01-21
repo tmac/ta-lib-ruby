@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "lib/ta_lib"
+require_relative "lib/ta_lib_ffi"
 
 Gem::Specification.new do |spec|
   spec.name = "ta_lib_ffi"
-  spec.version = TALib::VERSION
+  spec.version = TALibFFI::VERSION
   spec.authors = ["Victor Yang"]
   spec.email = ["victor@rt4u.bid"]
   spec.summary = "Ruby FFI bindings for TA-Lib (Technical Analysis Library)"

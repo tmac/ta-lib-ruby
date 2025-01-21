@@ -4,8 +4,22 @@ require "fiddle"
 require "fiddle/import"
 
 # Ruby FFI wrapper for TA-Lib (Technical Analysis Library)
-module TALib
-  VERSION = "0.1.0"
+module TALibFFI
+  VERSION = "0.2.0"
+
+  if defined?(Zeitwerk)
+    # Custom inflector for handling special case module names like TALibFFI
+    class Inflector < Zeitwerk::GemInflector
+      def camelize(basename, _abspath)
+        case basename
+        when "ta_lib_ffi"
+          "TALibFFI"
+        else
+          super
+        end
+      end
+    end
+  end
 
   extend Fiddle::Importer
 

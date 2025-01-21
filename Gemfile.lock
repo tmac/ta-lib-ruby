@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ta_lib_ffi (0.1.0)
+    ta_lib_ffi (0.2.0)
       fiddle (~> 1.1)
 
 GEM
