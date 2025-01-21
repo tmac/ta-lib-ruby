@@ -2,34 +2,89 @@
 
 ![Tests](https://github.com/Youngv/ta_lib_ffi/actions/workflows/main.yml/badge.svg)
 
-Ruby FFI wrapper for TA-Lib (Technical Analysis Library)
+## Introduction
+
+TALib is a Ruby binding for [TA-Lib](https://ta-lib.org/) (Technical Analysis Library) using FFI (Foreign Function Interface). It provides a comprehensive set of functions for technical analysis of financial market data.
+
+## Requirements
+
+- Ruby >= 3.0.0
+- TA-Lib >= 0.6.4
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+### [Install TA-Lib](https://ta-lib.org/install/)
 
-Install the gem and add to the application's Gemfile by executing:
+#### Windows
+Download and run the installer: [ta-lib-0.6.4-windows-x86_64.msi](https://github.com/ta-lib/ta-lib/releases/download/v0.6.4/ta-lib-0.6.4-windows-x86_64.msi)
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+#### macOS
+```bash
+brew install ta-lib
+```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+#### Linux (Debian/Ubuntu)
+```bash
+# For Intel/AMD 64-bit
+wget https://github.com/ta-lib/ta-lib/releases/download/v0.6.4/ta-lib_0.6.4_amd64.deb
+sudo dpkg -i ta-lib_0.6.4_amd64.deb
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+# For ARM64
+wget https://github.com/ta-lib/ta-lib/releases/download/v0.6.4/ta-lib_0.6.4_arm64.deb
+sudo dpkg -i ta-lib_0.6.4_arm64.deb
+
+# For Intel/AMD 32-bits
+wget https://github.com/ta-lib/ta-lib/releases/download/v0.6.4/ta-lib_0.6.4_i386.deb
+sudo dpkg -i ta-lib_0.6.4_i386.deb
+```
+
+### Installing the Ruby Gem
+
+Add this to your application's Gemfile:
+
+```ruby
+gem 'ta_lib_ffi'
+```
+
+Then execute:
+
+    $ bundle install
+
+Or install it directly:
+
+    $ gem install ta_lib_ffi
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require 'ta_lib'
+
+# Initialize data
+prices = [10.0, 11.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0]
+
+# Calculate SMA
+puts TALib.sma(prices, time_period: 3)
+# => [11.0, 11.333333333333334, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0, 5.0]
+```
+
+## TODO
+- [ ] Add RDoc documentation for Ruby methods
+- [ ] Create detailed function examples with input/output samples
+- [ ] Add more tests for each function
+- [ ] Support custom TA-Lib installation location
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -am 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Create a Pull Request
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ta_lib_ffi.
+Bug reports and pull requests are welcome on GitHub at https://github.com/Youngv/ta_lib_ffi
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+This gem is available as open source under the terms of the [MIT License](LICENSE).

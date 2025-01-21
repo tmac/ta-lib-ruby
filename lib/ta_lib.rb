@@ -322,8 +322,7 @@ module TALib
     begin
       setup_input_parameters(params_ptr, input_arrays, func_name)
       setup_optional_parameters(params_ptr, options, func_name)
-      lookback = calculate_lookback(params_ptr)
-      puts "Lookback: #{lookback}"
+      _lookback = calculate_lookback(params_ptr)
       calculate_results(params_ptr, input_arrays.first.length, func_name)
     ensure
       TA_ParamHolderFree(params_ptr)
@@ -438,7 +437,6 @@ module TALib
       check_ta_return_code(ret_code)
 
       actual_size = out_size[0, Fiddle::SIZEOF_INT].unpack1("l")
-      puts "actual_size: #{actual_size}"
       format_output_results(output_arrays, actual_size, func_name)
     ensure
       out_begin.free
