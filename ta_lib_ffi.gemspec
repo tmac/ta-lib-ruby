@@ -9,13 +9,13 @@ Gem::Specification.new do |spec|
   spec.email = ["victor@rt4u.bid"]
   spec.summary = "Ruby FFI bindings for TA-Lib (Technical Analysis Library)"
   spec.description = "A Ruby wrapper for TA-Lib using FFI, providing technical analysis functions for financial market data"
-  spec.homepage = "https://github.com/Youngv/ta_lib_ffi"
+  spec.homepage = "https://github.com/TA-Lib/ta-lib-ruby"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/Youngv/ta_lib_ffi"
-  spec.metadata["changelog_uri"] = "https://github.com/Youngv/ta_lib_ffi/blob/main/CHANGELOG.md"
+  spec.metadata["source_code_uri"] = "https://github.com/TA-Lib/ta-lib-ruby"
+  spec.metadata["changelog_uri"] = "https://github.com/TA-Lib/ta-lib-ruby/blob/main/CHANGELOG.md"
   spec.files = Dir[
     "lib/**/*",
     "LICENSE.txt",

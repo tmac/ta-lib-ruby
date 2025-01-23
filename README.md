@@ -1,6 +1,6 @@
 # TALibFFI
 
-![Tests](https://github.com/Youngv/ta_lib_ffi/actions/workflows/main.yml/badge.svg)
+![Tests](https://github.com/TA-Lib/ta-lib-ruby/actions/workflows/main.yml/badge.svg)
 
 ## Introduction
 
@@ -83,7 +83,7 @@ puts TALibFFI.sma(prices, time_period: 3)
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/Youngv/ta_lib_ffi
+Bug reports and pull requests are welcome on GitHub at https://github.com/TA-Lib/ta-lib-ruby
 
 ## License
 
