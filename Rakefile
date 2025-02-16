@@ -20,5 +20,5 @@ YARD::Rake::YardocTask.new do |t|
   t.files = ["lib/**/*.rb"]
   t.options = ["--exclude", "lib/ta_lib_ffi/doc.rb"]
   t.stats_options = ["--list-undoc"]
-  t.after = -> { TALibFFI::Doc.remove }
+  # t.after = -> { TALibFFI::Doc.remove }
 end

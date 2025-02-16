@@ -23,6 +23,7 @@ module TALibFFI
   if defined?(Zeitwerk)
     # https://github.com/fxn/zeitwerk?tab=readme-ov-file#custom-inflector
     class Inflector < Zeitwerk::GemInflector
+      # @!visibility private
       def camelize(basename, _abspath)
         case basename
         when "ta_lib_ffi"
@@ -789,6 +790,1289 @@ module TALibFFI
   # Run: rake yard
   class << self
     ### GENERATED DOCUMENTATION START ###
+    # @!method accbands(price_hlc, time_period: 20.0)
+    # Acceleration Bands
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param time_period [Integer]  Number of period (default: 20.0)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :upper_band  Output values
+    # @option result [Array<Float>] :middle_band  Output values
+    # @option result [Array<Float>] :lower_band  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method acos(real)
+    # Vector Trigonometric ACos
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ad(price_hlcv)
+    # Chaikin A/D Line
+    #
+    # @param price_hlcv [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE, TA_IN_PRICE_VOLUME
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method add(real0, real1)
+    # Vector Arithmetic Add
+    #
+    # @param real0 [Array<Float>]  Input values
+    # @param real1 [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method adosc(price_hlcv, fast_period: 3.0, slow_period: 10.0)
+    # Chaikin A/D Oscillator
+    #
+    # @param price_hlcv [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE, TA_IN_PRICE_VOLUME
+    # @param fast_period [Integer]  Number of period for the fast MA (default: 3.0)
+    # @param slow_period [Integer]  Number of period for the slow MA (default: 10.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method adx(price_hlc, time_period: 14.0)
+    # Average Directional Movement Index
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method adxr(price_hlc, time_period: 14.0)
+    # Average Directional Movement Index Rating
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method apo(real, fast_period: 12.0, slow_period: 26.0, ma_type: 0.0)
+    # Absolute Price Oscillator
+    #
+    # @param real [Array<Float>]  Input values
+    # @param fast_period [Integer]  Number of period for the fast MA (default: 12.0)
+    # @param slow_period [Integer]  Number of period for the slow MA (default: 26.0)
+    # @param ma_type [Integer]  Type of Moving Average (default: 0.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method aroon(price_hl, time_period: 14.0)
+    # Aroon
+    #
+    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :aroon_down  Output values
+    # @option result [Array<Float>] :aroon_up  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method aroonosc(price_hl, time_period: 14.0)
+    # Aroon Oscillator
+    #
+    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method asin(real)
+    # Vector Trigonometric ASin
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method atan(real)
+    # Vector Trigonometric ATan
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method atr(price_hlc, time_period: 14.0)
+    # Average True Range
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method avgprice(price_ohlc)
+    # Average Price
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method avgdev(real, time_period: 14.0)
+    # Average Deviation
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method bbands(real, time_period: 5.0, nb_dev_up: 2.0, nb_dev_dn: 2.0, ma_type: 0.0)
+    # Bollinger Bands
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 5.0)
+    # @param nb_dev_up [Float]  Deviation multiplier for upper band (default: 2.0)
+    # @param nb_dev_dn [Float]  Deviation multiplier for lower band (default: 2.0)
+    # @param ma_type [Integer]  Type of Moving Average (default: 0.0)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :upper_band  Output values
+    # @option result [Array<Float>] :middle_band  Output values
+    # @option result [Array<Float>] :lower_band  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method beta(real0, real1, time_period: 5.0)
+    # Beta
+    #
+    # @param real0 [Array<Float>]  Input values
+    # @param real1 [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 5.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method bop(price_ohlc)
+    # Balance Of Power
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cci(price_hlc, time_period: 14.0)
+    # Commodity Channel Index
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdl2crows(price_ohlc)
+    # Two Crows
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdl3blackcrows(price_ohlc)
+    # Three Black Crows
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdl3inside(price_ohlc)
+    # Three Inside Up/Down
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdl3linestrike(price_ohlc)
+    # Three-Line Strike
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdl3outside(price_ohlc)
+    # Three Outside Up/Down
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdl3starsinsouth(price_ohlc)
+    # Three Stars In The South
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdl3whitesoldiers(price_ohlc)
+    # Three Advancing White Soldiers
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlabandonedbaby(price_ohlc, penetration: 0.3)
+    # Abandoned Baby
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.3)
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdladvanceblock(price_ohlc)
+    # Advance Block
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlbelthold(price_ohlc)
+    # Belt-hold
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlbreakaway(price_ohlc)
+    # Breakaway
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlclosingmarubozu(price_ohlc)
+    # Closing Marubozu
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlconcealbabyswall(price_ohlc)
+    # Concealing Baby Swallow
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlcounterattack(price_ohlc)
+    # Counterattack
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdldarkcloudcover(price_ohlc, penetration: 0.5)
+    # Dark Cloud Cover
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.5)
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdldoji(price_ohlc)
+    # Doji
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdldojistar(price_ohlc)
+    # Doji Star
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdldragonflydoji(price_ohlc)
+    # Dragonfly Doji
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlengulfing(price_ohlc)
+    # Engulfing Pattern
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdleveningdojistar(price_ohlc, penetration: 0.3)
+    # Evening Doji Star
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.3)
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdleveningstar(price_ohlc, penetration: 0.3)
+    # Evening Star
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.3)
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlgapsidesidewhite(price_ohlc)
+    # Up/Down-gap side-by-side white lines
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlgravestonedoji(price_ohlc)
+    # Gravestone Doji
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlhammer(price_ohlc)
+    # Hammer
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlhangingman(price_ohlc)
+    # Hanging Man
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlharami(price_ohlc)
+    # Harami Pattern
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlharamicross(price_ohlc)
+    # Harami Cross Pattern
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlhighwave(price_ohlc)
+    # High-Wave Candle
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlhikkake(price_ohlc)
+    # Hikkake Pattern
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlhikkakemod(price_ohlc)
+    # Modified Hikkake Pattern
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlhomingpigeon(price_ohlc)
+    # Homing Pigeon
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlidentical3crows(price_ohlc)
+    # Identical Three Crows
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlinneck(price_ohlc)
+    # In-Neck Pattern
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlinvertedhammer(price_ohlc)
+    # Inverted Hammer
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlkicking(price_ohlc)
+    # Kicking
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlkickingbylength(price_ohlc)
+    # Kicking - bull/bear determined by the longer marubozu
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlladderbottom(price_ohlc)
+    # Ladder Bottom
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdllongleggeddoji(price_ohlc)
+    # Long Legged Doji
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdllongline(price_ohlc)
+    # Long Line Candle
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlmarubozu(price_ohlc)
+    # Marubozu
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlmatchinglow(price_ohlc)
+    # Matching Low
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlmathold(price_ohlc, penetration: 0.5)
+    # Mat Hold
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.5)
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlmorningdojistar(price_ohlc, penetration: 0.3)
+    # Morning Doji Star
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.3)
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlmorningstar(price_ohlc, penetration: 0.3)
+    # Morning Star
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.3)
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlonneck(price_ohlc)
+    # On-Neck Pattern
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlpiercing(price_ohlc)
+    # Piercing Pattern
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlrickshawman(price_ohlc)
+    # Rickshaw Man
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlrisefall3methods(price_ohlc)
+    # Rising/Falling Three Methods
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlseparatinglines(price_ohlc)
+    # Separating Lines
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlshootingstar(price_ohlc)
+    # Shooting Star
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlshortline(price_ohlc)
+    # Short Line Candle
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlspinningtop(price_ohlc)
+    # Spinning Top
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlstalledpattern(price_ohlc)
+    # Stalled Pattern
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlsticksandwich(price_ohlc)
+    # Stick Sandwich
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdltakuri(price_ohlc)
+    # Takuri (Dragonfly Doji with very long lower shadow)
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdltasukigap(price_ohlc)
+    # Tasuki Gap
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlthrusting(price_ohlc)
+    # Thrusting Pattern
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdltristar(price_ohlc)
+    # Tristar Pattern
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlunique3river(price_ohlc)
+    # Unique 3 River
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlupsidegap2crows(price_ohlc)
+    # Upside Gap Two Crows
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cdlxsidegap3methods(price_ohlc)
+    # Upside/Downside Gap Three Methods
+    #
+    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ceil(real)
+    # Vector Ceil
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cmo(real, time_period: 14.0)
+    # Chande Momentum Oscillator
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method correl(real0, real1, time_period: 30.0)
+    # Pearson's Correlation Coefficient (r)
+    #
+    # @param real0 [Array<Float>]  Input values
+    # @param real1 [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cos(real)
+    # Vector Trigonometric Cos
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method cosh(real)
+    # Vector Trigonometric Cosh
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method dema(real, time_period: 30.0)
+    # Double Exponential Moving Average
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method div(real0, real1)
+    # Vector Arithmetic Div
+    #
+    # @param real0 [Array<Float>]  Input values
+    # @param real1 [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method dx(price_hlc, time_period: 14.0)
+    # Directional Movement Index
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ema(real, time_period: 30.0)
+    # Exponential Moving Average
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method exp(real)
+    # Vector Arithmetic Exp
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method floor(real)
+    # Vector Floor
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ht_dcperiod(real)
+    # Hilbert Transform - Dominant Cycle Period
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ht_dcphase(real)
+    # Hilbert Transform - Dominant Cycle Phase
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ht_phasor(real)
+    # Hilbert Transform - Phasor Components
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :in_phase  Output values
+    # @option result [Array<Float>] :quadrature  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ht_sine(real)
+    # Hilbert Transform - SineWave
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :sine  Output values
+    # @option result [Array<Float>] :lead_sine  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ht_trendline(real)
+    # Hilbert Transform - Instantaneous Trendline
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ht_trendmode(real)
+    # Hilbert Transform - Trend vs Cycle Mode
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method imi(price_oc, time_period: 14.0)
+    # Intraday Momentum Index
+    #
+    # @param price_oc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_CLOSE
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method kama(real, time_period: 30.0)
+    # Kaufman Adaptive Moving Average
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method linearreg(real, time_period: 14.0)
+    # Linear Regression
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method linearreg_angle(real, time_period: 14.0)
+    # Linear Regression Angle
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method linearreg_intercept(real, time_period: 14.0)
+    # Linear Regression Intercept
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method linearreg_slope(real, time_period: 14.0)
+    # Linear Regression Slope
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ln(real)
+    # Vector Log Natural
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method log10(real)
+    # Vector Log10
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ma(real, time_period: 30.0, ma_type: 0.0)
+    # Moving average
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @param ma_type [Integer]  Type of Moving Average (default: 0.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method macd(real, fast_period: 12.0, slow_period: 26.0, signal_period: 9.0)
+    # Moving Average Convergence/Divergence
+    #
+    # @param real [Array<Float>]  Input values
+    # @param fast_period [Integer]  Number of period for the fast MA (default: 12.0)
+    # @param slow_period [Integer]  Number of period for the slow MA (default: 26.0)
+    # @param signal_period [Integer]  Smoothing for the signal line (nb of period) (default: 9.0)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :macd  Output values
+    # @option result [Array<Float>] :macd_signal  Output values
+    # @option result [Array<Float>] :macd_hist  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method macdext(real, fast_period: 12.0, fast_ma_type: 0.0, slow_period: 26.0, slow_ma_type: 0.0, signal_period: 9.0, signal_ma_type: 0.0)
+    # MACD with controllable MA type
+    #
+    # @param real [Array<Float>]  Input values
+    # @param fast_period [Integer]  Number of period for the fast MA (default: 12.0)
+    # @param fast_ma_type [Integer]  Type of Moving Average for fast MA (default: 0.0)
+    # @param slow_period [Integer]  Number of period for the slow MA (default: 26.0)
+    # @param slow_ma_type [Integer]  Type of Moving Average for slow MA (default: 0.0)
+    # @param signal_period [Integer]  Smoothing for the signal line (nb of period) (default: 9.0)
+    # @param signal_ma_type [Integer]  Type of Moving Average for signal line (default: 0.0)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :macd  Output values
+    # @option result [Array<Float>] :macd_signal  Output values
+    # @option result [Array<Float>] :macd_hist  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method macdfix(real, signal_period: 9.0)
+    # Moving Average Convergence/Divergence Fix 12/26
+    #
+    # @param real [Array<Float>]  Input values
+    # @param signal_period [Integer]  Smoothing for the signal line (nb of period) (default: 9.0)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :macd  Output values
+    # @option result [Array<Float>] :macd_signal  Output values
+    # @option result [Array<Float>] :macd_hist  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method mama(real, fast_limit: 0.5, slow_limit: 0.05)
+    # MESA Adaptive Moving Average
+    #
+    # @param real [Array<Float>]  Input values
+    # @param fast_limit [Float]  Upper limit use in the adaptive algorithm (default: 0.5)
+    # @param slow_limit [Float]  Lower limit use in the adaptive algorithm (default: 0.05)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :mama  Output values
+    # @option result [Array<Float>] :fama  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method mavp(real, periods, min_period: 2.0, max_period: 30.0, ma_type: 0.0)
+    # Moving average with variable period
+    #
+    # @param real [Array<Float>]  Input values
+    # @param periods [Array<Float>]  Input values
+    # @param min_period [Integer]  Value less than minimum will be changed to Minimum period (default: 2.0)
+    # @param max_period [Integer]  Value higher than maximum will be changed to Maximum period (default: 30.0)
+    # @param ma_type [Integer]  Type of Moving Average (default: 0.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method max(real, time_period: 30.0)
+    # Highest value over a specified period
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method maxindex(real, time_period: 30.0)
+    # Index of highest value over a specified period
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method medprice(price_hl)
+    # Median Price
+    #
+    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method mfi(price_hlcv, time_period: 14.0)
+    # Money Flow Index
+    #
+    # @param price_hlcv [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE, TA_IN_PRICE_VOLUME
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method midpoint(real, time_period: 14.0)
+    # MidPoint over period
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method midprice(price_hl, time_period: 14.0)
+    # Midpoint Price over period
+    #
+    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method min(real, time_period: 30.0)
+    # Lowest value over a specified period
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method minindex(real, time_period: 30.0)
+    # Index of lowest value over a specified period
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Integer>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method minmax(real, time_period: 30.0)
+    # Lowest and highest values over a specified period
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :min  Output values
+    # @option result [Array<Float>] :max  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method minmaxindex(real, time_period: 30.0)
+    # Indexes of lowest and highest values over a specified period
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Integer>] :min_idx  Output values
+    # @option result [Array<Integer>] :max_idx  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method minus_di(price_hlc, time_period: 14.0)
+    # Minus Directional Indicator
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method minus_dm(price_hl, time_period: 14.0)
+    # Minus Directional Movement
+    #
+    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method mom(real, time_period: 10.0)
+    # Momentum
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 10.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method mult(real0, real1)
+    # Vector Arithmetic Mult
+    #
+    # @param real0 [Array<Float>]  Input values
+    # @param real1 [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method natr(price_hlc, time_period: 14.0)
+    # Normalized Average True Range
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method obv(real, price_v)
+    # On Balance Volume
+    #
+    # @param real [Array<Float>]  Input values
+    # @param price_v [Array<Float>]  TA_IN_PRICE_VOLUME
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method plus_di(price_hlc, time_period: 14.0)
+    # Plus Directional Indicator
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method plus_dm(price_hl, time_period: 14.0)
+    # Plus Directional Movement
+    #
+    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ppo(real, fast_period: 12.0, slow_period: 26.0, ma_type: 0.0)
+    # Percentage Price Oscillator
+    #
+    # @param real [Array<Float>]  Input values
+    # @param fast_period [Integer]  Number of period for the fast MA (default: 12.0)
+    # @param slow_period [Integer]  Number of period for the slow MA (default: 26.0)
+    # @param ma_type [Integer]  Type of Moving Average (default: 0.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method roc(real, time_period: 10.0)
+    # Rate of change : ((price/prevPrice)-1)*100
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 10.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method rocp(real, time_period: 10.0)
+    # Rate of change Percentage: (price-prevPrice)/prevPrice
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 10.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method rocr(real, time_period: 10.0)
+    # Rate of change ratio: (price/prevPrice)
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 10.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method rocr100(real, time_period: 10.0)
+    # Rate of change ratio 100 scale: (price/prevPrice)*100
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 10.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method rsi(real, time_period: 14.0)
+    # Relative Strength Index
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method sar(price_hl, acceleration: 0.02, maximum: 0.2)
+    # Parabolic SAR
+    #
+    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param acceleration [Float]  Acceleration Factor used up to the Maximum value (default: 0.02)
+    # @param maximum [Float]  Acceleration Factor Maximum value (default: 0.2)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method sarext(price_hl, start_value: 0.0, offset_on_reverse: 0.0, acceleration_init_long: 0.02, acceleration_long: 0.02, acceleration_max_long: 0.2, acceleration_init_short: 0.02, acceleration_short: 0.02, acceleration_max_short: 0.2)
+    # Parabolic SAR - Extended
+    #
+    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param start_value [Float]  Start value and direction. 0 for Auto, >0 for Long, <0 for Short (default: 0.0)
+    # @param offset_on_reverse [Float]  Percent offset added/removed to initial stop on short/long reversal (default: 0.0)
+    # @param acceleration_init_long [Float]  Acceleration Factor initial value for the Long direction (default: 0.02)
+    # @param acceleration_long [Float]  Acceleration Factor for the Long direction (default: 0.02)
+    # @param acceleration_max_long [Float]  Acceleration Factor maximum value for the Long direction (default: 0.2)
+    # @param acceleration_init_short [Float]  Acceleration Factor initial value for the Short direction (default: 0.02)
+    # @param acceleration_short [Float]  Acceleration Factor for the Short direction (default: 0.02)
+    # @param acceleration_max_short [Float]  Acceleration Factor maximum value for the Short direction (default: 0.2)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method sin(real)
+    # Vector Trigonometric Sin
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method sinh(real)
+    # Vector Trigonometric Sinh
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method sma(real, time_period: 30.0)
+    # Simple Moving Average
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method sqrt(real)
+    # Vector Square Root
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method stddev(real, time_period: 5.0, nb_dev: 1.0)
+    # Standard Deviation
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 5.0)
+    # @param nb_dev [Float]  Nb of deviations (default: 1.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method stoch(price_hlc, fast_k_period: 5.0, slow_k_period: 3.0, slow_k_ma_type: 0.0, slow_d_period: 3.0, slow_d_ma_type: 0.0)
+    # Stochastic
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param fast_k_period [Integer]  Time period for building the Fast-K line (default: 5.0)
+    # @param slow_k_period [Integer]  Smoothing for making the Slow-K line. Usually set to 3 (default: 3.0)
+    # @param slow_k_ma_type [Integer]  Type of Moving Average for Slow-K (default: 0.0)
+    # @param slow_d_period [Integer]  Smoothing for making the Slow-D line (default: 3.0)
+    # @param slow_d_ma_type [Integer]  Type of Moving Average for Slow-D (default: 0.0)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :slow_k  Output values
+    # @option result [Array<Float>] :slow_d  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method stochf(price_hlc, fast_k_period: 5.0, fast_d_period: 3.0, fast_d_ma_type: 0.0)
+    # Stochastic Fast
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param fast_k_period [Integer]  Time period for building the Fast-K line (default: 5.0)
+    # @param fast_d_period [Integer]  Smoothing for making the Fast-D line. Usually set to 3 (default: 3.0)
+    # @param fast_d_ma_type [Integer]  Type of Moving Average for Fast-D (default: 0.0)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :fast_k  Output values
+    # @option result [Array<Float>] :fast_d  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method stochrsi(real, time_period: 14.0, fast_k_period: 5.0, fast_d_period: 3.0, fast_d_ma_type: 0.0)
+    # Stochastic Relative Strength Index
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @param fast_k_period [Integer]  Time period for building the Fast-K line (default: 5.0)
+    # @param fast_d_period [Integer]  Smoothing for making the Fast-D line. Usually set to 3 (default: 3.0)
+    # @param fast_d_ma_type [Integer]  Type of Moving Average for Fast-D (default: 0.0)
+    # @return [Hash]  Hash containing the following arrays:
+    # @option result [Array<Float>] :fast_k  Output values
+    # @option result [Array<Float>] :fast_d  Output values
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method sub(real0, real1)
+    # Vector Arithmetic Subtraction
+    #
+    # @param real0 [Array<Float>]  Input values
+    # @param real1 [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method sum(real, time_period: 30.0)
+    # Summation
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method t3(real, time_period: 5.0, v_factor: 0.7)
+    # Triple Exponential Moving Average (T3)
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 5.0)
+    # @param v_factor [Float]  Volume Factor (default: 0.7)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method tan(real)
+    # Vector Trigonometric Tan
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method tanh(real)
+    # Vector Trigonometric Tanh
+    #
+    # @param real [Array<Float>]  Input values
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method tema(real, time_period: 30.0)
+    # Triple Exponential Moving Average
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method trange(price_hlc)
+    # True Range
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method trima(real, time_period: 30.0)
+    # Triangular Moving Average
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method trix(real, time_period: 30.0)
+    # 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method tsf(real, time_period: 14.0)
+    # Time Series Forecast
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method typprice(price_hlc)
+    # Typical Price
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method ultosc(price_hlc, time_period1: 7.0, time_period2: 14.0, time_period3: 28.0)
+    # Ultimate Oscillator
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param time_period1 [Integer]  Number of bars for 1st period. (default: 7.0)
+    # @param time_period2 [Integer]  Number of bars fro 2nd period (default: 14.0)
+    # @param time_period3 [Integer]  Number of bars for 3rd period (default: 28.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method var(real, time_period: 5.0, nb_dev: 1.0)
+    # Variance
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 5.0)
+    # @param nb_dev [Float]  Nb of deviations (default: 1.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method wclprice(price_hlc)
+    # Weighted Close Price
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method willr(price_hlc, time_period: 14.0)
+    # Williams' %R
+    #
+    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param time_period [Integer]  Number of period (default: 14.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
+    # @!method wma(real, time_period: 30.0)
+    # Weighted Moving Average
+    #
+    # @param real [Array<Float>]  Input values
+    # @param time_period [Integer]  Number of period (default: 30.0)
+    # @return [Array<Float>]
+    # @raise [TALibError]  If there is an error in function execution
+
     ### GENERATED DOCUMENTATION END ###
   end
 end
