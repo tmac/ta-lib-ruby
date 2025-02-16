@@ -1,6 +1,7 @@
 # TALibFFI
 
 ![Tests](https://github.com/TA-Lib/ta-lib-ruby/actions/workflows/main.yml/badge.svg)
+![Gem Version](https://img.shields.io/gem/v/ta_lib_ffi.svg)
 
 ## Introduction
 
@@ -8,7 +9,7 @@ TALibFFI is a Ruby binding for [TA-Lib](https://ta-lib.org/) (Technical Analysis
 
 ## Requirements
 
-- Ruby >= 3.0.0
+- Ruby >= 3.1.0
 - TA-Lib >= 0.6.4
 
 ## Installation
