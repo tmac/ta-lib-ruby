@@ -1,0 +1,3 @@
+--no-private
+--exclude lib/ta_lib_ffi/doc.rb
+lib/**/*.rb

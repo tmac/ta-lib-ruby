@@ -22,8 +22,8 @@ module TALibFFI
 
   if defined?(Zeitwerk)
     # https://github.com/fxn/zeitwerk?tab=readme-ov-file#custom-inflector
+    # @!visibility private
     class Inflector < Zeitwerk::GemInflector
-      # @!visibility private
       def camelize(basename, _abspath)
         case basename
         when "ta_lib_ffi"
