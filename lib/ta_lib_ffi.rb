@@ -4,11 +4,24 @@ require "fiddle"
 require "fiddle/import"
 
 # Ruby FFI wrapper for TA-Lib (Technical Analysis Library)
+#
+# This module provides a Ruby interface to the TA-Lib technical analysis library
+# using FFI (Foreign Function Interface). It allows you to perform various
+# technical analysis calculations on financial market data.
+#
+# @example Basic usage
+#   require 'ta_lib_ffi'
+#
+#   # Calculate Simple Moving Average
+#   prices = [10.0, 11.0, 12.0, 11.0, 10.0]
+#   result = TALibFFI.sma(prices, time_period: 3)
+#
+# @see https://ta-lib.org/ TA-Lib Official Website
 module TALibFFI
   VERSION = "0.2.0"
 
   if defined?(Zeitwerk)
-    # Custom inflector for handling special case module names like TALibFFI
+    # https://github.com/fxn/zeitwerk?tab=readme-ov-file#custom-inflector
     class Inflector < Zeitwerk::GemInflector
       def camelize(basename, _abspath)
         case basename
@@ -210,6 +223,11 @@ module TALibFFI
 
   module_function
 
+  # Extracts flags from a bitmask value based on the flag type
+  #
+  # @param value [Integer] The bitmask value to extract flags from
+  # @param type [Symbol] The type of flags to extract (:TA_InputFlags, :TA_OptInputFlags, or :TA_OutputFlags)
+  # @return [Array<Symbol>] Array of flag names that are set in the bitmask
   def extract_flags(value, type)
     flags_set = []
     TA_FLAGS[type].each do |k, v|
@@ -218,6 +236,9 @@ module TALibFFI
     flags_set
   end
 
+  # Returns a list of all available function groups in TA-Lib
+  #
+  # @return [Array<String>] Array of group names
   def group_table
     string_table_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
     ret_code = TA_GroupTableAlloc(string_table_ptr.ref)
@@ -230,6 +251,10 @@ module TALibFFI
     group_names
   end
 
+  # Returns a list of all functions in a specific group
+  #
+  # @param group [String] The name of the group to get functions for
+  # @return [Array<String>] Array of function names in the group
   def function_table(group)
     string_table_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
     ret_code = TA_FuncTableAlloc(group, string_table_ptr.ref)
@@ -243,6 +268,10 @@ module TALibFFI
     func_names
   end
 
+  # Gets detailed information about a specific TA-Lib function
+  #
+  # @param name [String] The name of the function to get information for
+  # @return [Fiddle::CStructEntity] Struct containing function information
   def function_info(name)
     handle_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
     ret_code = TA_GetFuncHandle(name, handle_ptr.ref)
@@ -255,6 +284,10 @@ module TALibFFI
     TA_FuncInfo.new(info_ptr)
   end
 
+  # Iterates over all available TA-Lib functions
+  #
+  # @yield [func_info] Yields function information for each function
+  # @yieldparam func_info [Fiddle::CStructEntity] Function information struct
   def each_function(&block)
     callback = Fiddle::Closure::BlockCaller.new(
       Fiddle::TYPE_VOID,
@@ -268,9 +301,10 @@ module TALibFFI
     check_ta_return_code(ret_code)
   end
 
-  # rubocop:disable Metrics/MethodLength
-  # rubocop:disable Metrics/AbcSize
-  def print_function_info(func_info)
+  # Prints detailed information about a TA-Lib function
+  #
+  # @param func_info [Fiddle::CStructEntity] Function information struct to print
+  def print_function_info(func_info) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     puts "Function Name: #{func_info["name"]}"
     puts "Function Group: #{func_info["group"]}"
     puts "Function Hint: #{func_info["hint"]}"
@@ -320,11 +354,14 @@ module TALibFFI
       puts "    Flags: #{extract_flags(param_info["flags"], :TA_OutputFlags)}"
     end
   end
-  # rubocop:enable Metrics/MethodLength
-  # rubocop:enable Metrics/AbcSize
 
-  # rubocop:disable Metrics/MethodLength
-  def call_func(func_name, args)
+  # Calls a TA-Lib function with the given arguments
+  #
+  # @param func_name [String] The name of the function to call
+  # @param args [Array] Array of input arrays and optional parameters
+  # @return [Array, Hash] Function results (single array or hash of named outputs)
+  # @raise [TALibError] If there is an error in function execution
+  def call_func(func_name, args) # rubocop:disable Metrics/MethodLength
     options = args.last.is_a?(Hash) ? args.pop : {}
     input_arrays = args
 
@@ -342,8 +379,11 @@ module TALibFFI
       TA_ParamHolderFree(params_ptr)
     end
   end
-  # rubocop:enable Metrics/MethodLength
 
+  # Calculates the lookback period for a function with given parameters
+  #
+  # @param params_ptr [Fiddle::Pointer] Pointer to parameter holder
+  # @return [Integer] The lookback period
   def calculate_lookback(params_ptr)
     lookback_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
     ret_code = TA_GetLookback(params_ptr, lookback_ptr)
@@ -351,9 +391,11 @@ module TALibFFI
     lookback_ptr[0, Fiddle::SIZEOF_INT].unpack1("l")
   end
 
-  # rubocop:disable Metrics/CyclomaticComplexity
-  # rubocop:disable Metrics/PerceivedComplexity
-  def validate_inputs!(arrays)
+  # Validates input arrays for TA-Lib functions
+  #
+  # @param arrays [Array<Array>] Arrays to validate
+  # @raise [TALibError] If any array is invalid
+  def validate_inputs!(arrays) # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     raise TALibError, "Input arrays cannot be empty" if arrays.empty?
 
     arrays.each do |arr|
@@ -367,9 +409,11 @@ module TALibFFI
       raise TALibError, "Input arrays must contain only numbers" unless arr.flatten.all? { |x| x.is_a?(Numeric) }
     end
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
-  # rubocop:enable Metrics/PerceivedComplexity
 
+  # Gets a function handle for a given function name
+  #
+  # @param func_name [String] The name of the function
+  # @return [Fiddle::Pointer] Pointer to function handle
   def get_function_handle(func_name)
     handle_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
     ret_code = TA_GetFuncHandle(func_name, handle_ptr.ref)
@@ -377,6 +421,10 @@ module TALibFFI
     handle_ptr
   end
 
+  # Creates a parameter holder for a function
+  #
+  # @param handle_ptr [Fiddle::Pointer] Function handle pointer
+  # @return [Fiddle::Pointer] Pointer to parameter holder
   def create_parameter_holder(handle_ptr)
     params_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
     ret_code = TA_ParamHolderAlloc(handle_ptr, params_ptr.ref)
@@ -384,6 +432,11 @@ module TALibFFI
     params_ptr
   end
 
+  # Sets up input parameters for a function call
+  #
+  # @param params_ptr [Fiddle::Pointer] Parameter holder pointer
+  # @param input_arrays [Array<Array>] Input data arrays
+  # @param func_name [String] Function name
   def setup_input_parameters(params_ptr, input_arrays, func_name)
     func_info = function_info_map[func_name]
     input_arrays.each_with_index do |array, index|
@@ -393,6 +446,13 @@ module TALibFFI
     end
   end
 
+  # Sets a single input parameter
+  #
+  # @param params_ptr [Fiddle::Pointer] Parameter holder pointer
+  # @param index [Integer] Parameter index
+  # @param array [Array] Input data array
+  # @param input_info [Hash] Input parameter information
+  # @return [Integer] TA-Lib return code
   def set_input_parameter(params_ptr, index, array, input_info)
     case input_info["type"]
     when TA_PARAM_TYPE[:TA_Input_Real]
@@ -406,6 +466,10 @@ module TALibFFI
     end
   end
 
+  # Prepares a double array for TA-Lib input
+  #
+  # @param array [Array<Numeric>] Array of numbers to prepare
+  # @return [Fiddle::Pointer] Pointer to prepared array
   def prepare_double_array(array)
     array_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_DOUBLE * array.length)
     array.each_with_index do |value, i|
@@ -414,6 +478,10 @@ module TALibFFI
     array_ptr
   end
 
+  # Prepares an integer array for TA-Lib input
+  #
+  # @param array [Array<Numeric>] Array of numbers to prepare
+  # @return [Fiddle::Pointer] Pointer to prepared array
   def prepare_integer_array(array)
     array_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT * array.length)
     array.each_with_index do |value, i|
@@ -422,6 +490,11 @@ module TALibFFI
     array_ptr
   end
 
+  # Sets up optional parameters for a function call
+  #
+  # @param params_ptr [Fiddle::Pointer] Parameter holder pointer
+  # @param options [Hash] Optional parameters
+  # @param func_name [String] Function name
   def setup_optional_parameters(params_ptr, options, func_name)
     func_info = function_info_map[func_name]
     func_info[:opt_inputs]&.each_with_index do |opt_input, index|
@@ -430,6 +503,12 @@ module TALibFFI
     end
   end
 
+  # Sets a single optional parameter
+  #
+  # @param params_ptr [Fiddle::Pointer] Parameter holder pointer
+  # @param index [Integer] Parameter index
+  # @param value [Numeric] Parameter value
+  # @param type [Integer] Parameter type
   def set_optional_parameter(params_ptr, index, value, type)
     case type
     when TA_PARAM_TYPE[:TA_OptInput_RealRange], TA_PARAM_TYPE[:TA_OptInput_RealList]
@@ -440,8 +519,13 @@ module TALibFFI
     check_ta_return_code(ret_code)
   end
 
-  # rubocop:disable Metrics/MethodLength
-  def calculate_results(params_ptr, input_size, func_name)
+  # Calculates function results
+  #
+  # @param params_ptr [Fiddle::Pointer] Parameter holder pointer
+  # @param input_size [Integer] Size of input data
+  # @param func_name [String] Function name
+  # @return [Array, Hash] Function results
+  def calculate_results(params_ptr, input_size, func_name) # rubocop:disable Metrics/MethodLength
     out_begin = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
     out_size = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
     output_arrays = setup_output_buffers(params_ptr, input_size, func_name)
@@ -458,11 +542,14 @@ module TALibFFI
       output_arrays.each(&:free)
     end
   end
-  # rubocop:enable Metrics/MethodLength
 
-  # rubocop:disable Metrics/MethodLength
-  # rubocop:disable Metrics/AbcSize
-  def setup_output_buffers(params_ptr, size, func_name)
+  # Sets up output buffers for function results
+  #
+  # @param params_ptr [Fiddle::Pointer] Parameter holder pointer
+  # @param size [Integer] Size of output buffer
+  # @param func_name [String] Function name
+  # @return [Array<Fiddle::Pointer>] Array of output buffer pointers
+  def setup_output_buffers(params_ptr, size, func_name) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     func_info = function_info_map[func_name]
     output_ptrs = []
 
@@ -488,12 +575,14 @@ module TALibFFI
 
     output_ptrs
   end
-  # rubocop:enable Metrics/MethodLength
-  # rubocop:enable Metrics/AbcSize
 
-  # rubocop:disable Metrics/MethodLength
-  # rubocop:disable Metrics/AbcSize
-  def format_output_results(output_ptrs, size, func_name)
+  # Formats output results from TA-Lib function
+  #
+  # @param output_ptrs [Array<Fiddle::Pointer>] Array of output buffer pointers
+  # @param size [Integer] Size of output data
+  # @param func_name [String] Function name
+  # @return [Array, Hash] Formatted results
+  def format_output_results(output_ptrs, size, func_name) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     func_info = function_info_map[func_name]
     results = output_ptrs.zip(func_info[:outputs]).map do |ptr, output|
       case output["type"]
@@ -511,17 +600,24 @@ module TALibFFI
     end
     output_names.zip(results).to_h
   end
-  # rubocop:enable Metrics/AbcSize
-  # rubocop:enable Metrics/MethodLength
 
+  # Gets XML description of all TA-Lib functions
+  #
+  # @return [String] XML function descriptions
   def function_description_xml
     TA_FunctionDescriptionXML().to_s
   end
 
+  # Gets or builds the function information map
+  #
+  # @return [Hash] Map of function information
   def function_info_map
     @function_info_map ||= build_function_info_map
   end
 
+  # Builds a map of function information for all functions
+  #
+  # @return [Hash] Map of function information
   def build_function_info_map
     info_map = {}
     each_function do |func_info|
@@ -535,6 +631,10 @@ module TALibFFI
     info_map
   end
 
+  # Collects input parameter information for a function
+  #
+  # @param func_info [Fiddle::CStructEntity] Function information
+  # @return [Array<Fiddle::CStructEntity>] Array of input parameter information
   def collect_input_info(func_info)
     func_info["nbInput"].times.map do |i|
       param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
@@ -543,6 +643,10 @@ module TALibFFI
     end
   end
 
+  # Collects optional input parameter information for a function
+  #
+  # @param func_info [Fiddle::CStructEntity] Function information
+  # @return [Array<Fiddle::CStructEntity>] Array of optional input parameter information
   def collect_opt_input_info(func_info)
     func_info["nbOptInput"].times.map do |i|
       param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
@@ -551,6 +655,10 @@ module TALibFFI
     end
   end
 
+  # Collects output parameter information for a function
+  #
+  # @param func_info [Fiddle::CStructEntity] Function information
+  # @return [Array<Fiddle::CStructEntity>] Array of output parameter information
   def collect_output_info(func_info)
     func_info["nbOutput"].times.map do |i|
       param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
@@ -559,14 +667,22 @@ module TALibFFI
     end
   end
 
+  # Generates Ruby methods for all TA-Lib functions
+  #
+  # This method iterates through all available TA-Lib functions and creates
+  # corresponding Ruby methods with proper documentation.
   def generate_ta_functions
     each_function do |func_info|
       define_ta_function(func_info["name"].to_s.downcase, func_info["name"].to_s)
     end
   end
 
+  # Normalizes parameter names to Ruby style
+  #
+  # @param name [String] Parameter name to normalize
+  # @return [String] Normalized parameter name
   def normalize_parameter_name(name)
-    name.sub(/^(optIn|outReal|outInteger|out)/, "")
+    name.sub(/^(optIn|outReal|outInteger|out|in)/, "")
         .gsub(/::/, "/")
         .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
         .gsub(/([a-z\d])([A-Z])/, '\1_\2')
@@ -574,10 +690,11 @@ module TALibFFI
         .downcase
   end
 
-  # rubocop:disable Metrics/MethodLength
-  # rubocop:disable Metrics/AbcSize
-  # rubocop:disable Metrics/CyclomaticComplexity
-  def check_ta_return_code(code)
+  # Checks TA-Lib return codes and raises appropriate errors
+  #
+  # @param code [Integer] TA-Lib return code
+  # @raise [TALibError] If the return code indicates an error
+  def check_ta_return_code(code) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength
     return if code == TA_SUCCESS
 
     error_message = case code
@@ -623,10 +740,8 @@ module TALibFFI
 
     raise TALibError, error_message
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
-  # rubocop:enable Metrics/MethodLength
-  # rubocop:enable Metrics/AbcSize
 
+  # Initializes the TA-Lib library
   def initialize_ta_lib
     return if @initialized
 
@@ -636,12 +751,22 @@ module TALibFFI
     @initialized = true
   end
 
+  # Defines a TA-Lib function as a Ruby method with documentation
+  #
+  # @param method_name [String] Name of the Ruby method to define
+  # @param func_name [String] Name of the TA-Lib function
   def define_ta_function(method_name, func_name)
     define_singleton_method(method_name) do |*args|
       call_func(func_name, args)
     end
   end
 
+  # Sets up price inputs for functions that take price data
+  #
+  # @param params_ptr [Fiddle::Pointer] Parameter holder pointer
+  # @param index [Integer] Parameter index
+  # @param price_data [Array] Price data array
+  # @param flags [Integer] Input flags
   def setup_price_inputs(params_ptr, index, price_data, flags)
     required_flags = extract_flags(flags, :TA_InputFlags)
     data_pointers = Array.new(6) { nil }
@@ -658,4 +783,12 @@ module TALibFFI
 
   initialize_ta_lib
   generate_ta_functions
+
+  # Placeholder for generated TA-Lib function documentation.
+  # Generated using YARD.
+  # Run: rake yard
+  class << self
+    ### GENERATED DOCUMENTATION START ###
+    ### GENERATED DOCUMENTATION END ###
+  end
 end
