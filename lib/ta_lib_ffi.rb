@@ -375,7 +375,7 @@ module TALibFFI
       setup_input_parameters(params_ptr, input_arrays, func_name)
       setup_optional_parameters(params_ptr, options, func_name)
       _lookback = calculate_lookback(params_ptr)
-      calculate_results(params_ptr, input_arrays.first.length, func_name)
+      calculate_results(params_ptr, input_arrays, func_name)
     ensure
       TA_ParamHolderFree(params_ptr)
     end
@@ -523,10 +523,17 @@ module TALibFFI
   # Calculates function results
   #
   # @param params_ptr [Fiddle::Pointer] Parameter holder pointer
-  # @param input_size [Integer] Size of input data
+  # @param input_arrays [Array] Input data
   # @param func_name [String] Function name
   # @return [Array, Hash] Function results
-  def calculate_results(params_ptr, input_size, func_name) # rubocop:disable Metrics/MethodLength
+  def calculate_results(params_ptr, input_arrays, func_name) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+    func_info = function_info_map[func_name]
+    input_size = if func_info[:inputs].first["type"] == TA_PARAM_TYPE[:TA_Input_Price]
+                   input_arrays[0][0].length
+                 else
+                   input_arrays[0].length
+                 end
+
     out_begin = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
     out_size = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
     output_arrays = setup_output_buffers(params_ptr, input_size, func_name)
@@ -770,13 +777,10 @@ module TALibFFI
   # @param flags [Integer] Input flags
   def setup_price_inputs(params_ptr, index, price_data, flags)
     required_flags = extract_flags(flags, :TA_InputFlags)
-    data_pointers = Array.new(6) { nil }
-    TA_FLAGS[:TA_InputFlags].keys[0..5].each_with_index do |flag, i|
-      data_pointers[i] = if required_flags.include?(flag)
-                           prepare_double_array(price_data[required_flags.index(flag)])
-                         else
-                           Fiddle::Pointer.malloc(0)
-                         end
+    data_pointers = Array.new(6) { Fiddle::Pointer.malloc(0) }
+    required_flags.each_with_index do |flag, i|
+      flag_index = TA_FLAGS[:TA_InputFlags].keys.index(flag)
+      data_pointers[flag_index] = prepare_double_array(price_data[i]) if required_flags.include?(flag)
     end
 
     TA_SetInputParamPricePtr(params_ptr, index, *data_pointers)
@@ -793,7 +797,7 @@ module TALibFFI
     # @!method accbands(price_hlc, time_period: 20.0)
     # Acceleration Bands
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param time_period [Integer]  Number of period (default: 20.0)
     # @return [Hash]  Hash containing the following arrays:
     # @option result [Array<Float>] :upper_band  Output values
@@ -811,7 +815,7 @@ module TALibFFI
     # @!method ad(price_hlcv)
     # Chaikin A/D Line
     #
-    # @param price_hlcv [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE, TA_IN_PRICE_VOLUME
+    # @param price_hlcv [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close, volume
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
 
@@ -826,7 +830,7 @@ module TALibFFI
     # @!method adosc(price_hlcv, fast_period: 3.0, slow_period: 10.0)
     # Chaikin A/D Oscillator
     #
-    # @param price_hlcv [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE, TA_IN_PRICE_VOLUME
+    # @param price_hlcv [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close, volume
     # @param fast_period [Integer]  Number of period for the fast MA (default: 3.0)
     # @param slow_period [Integer]  Number of period for the slow MA (default: 10.0)
     # @return [Array<Float>]
@@ -835,7 +839,7 @@ module TALibFFI
     # @!method adx(price_hlc, time_period: 14.0)
     # Average Directional Movement Index
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -843,7 +847,7 @@ module TALibFFI
     # @!method adxr(price_hlc, time_period: 14.0)
     # Average Directional Movement Index Rating
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -861,7 +865,7 @@ module TALibFFI
     # @!method aroon(price_hl, time_period: 14.0)
     # Aroon
     #
-    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param price_hl [Array<Float>, Array<Float>]  Required price arrays: high, low
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Hash]  Hash containing the following arrays:
     # @option result [Array<Float>] :aroon_down  Output values
@@ -871,7 +875,7 @@ module TALibFFI
     # @!method aroonosc(price_hl, time_period: 14.0)
     # Aroon Oscillator
     #
-    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param price_hl [Array<Float>, Array<Float>]  Required price arrays: high, low
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -893,7 +897,7 @@ module TALibFFI
     # @!method atr(price_hlc, time_period: 14.0)
     # Average True Range
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -901,7 +905,7 @@ module TALibFFI
     # @!method avgprice(price_ohlc)
     # Average Price
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
 
@@ -939,14 +943,14 @@ module TALibFFI
     # @!method bop(price_ohlc)
     # Balance Of Power
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cci(price_hlc, time_period: 14.0)
     # Commodity Channel Index
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -954,56 +958,56 @@ module TALibFFI
     # @!method cdl2crows(price_ohlc)
     # Two Crows
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdl3blackcrows(price_ohlc)
     # Three Black Crows
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdl3inside(price_ohlc)
     # Three Inside Up/Down
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdl3linestrike(price_ohlc)
     # Three-Line Strike
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdl3outside(price_ohlc)
     # Three Outside Up/Down
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdl3starsinsouth(price_ohlc)
     # Three Stars In The South
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdl3whitesoldiers(price_ohlc)
     # Three Advancing White Soldiers
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlabandonedbaby(price_ohlc, penetration: 0.3)
     # Abandoned Baby
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.3)
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1011,49 +1015,49 @@ module TALibFFI
     # @!method cdladvanceblock(price_ohlc)
     # Advance Block
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlbelthold(price_ohlc)
     # Belt-hold
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlbreakaway(price_ohlc)
     # Breakaway
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlclosingmarubozu(price_ohlc)
     # Closing Marubozu
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlconcealbabyswall(price_ohlc)
     # Concealing Baby Swallow
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlcounterattack(price_ohlc)
     # Counterattack
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdldarkcloudcover(price_ohlc, penetration: 0.5)
     # Dark Cloud Cover
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.5)
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1061,35 +1065,35 @@ module TALibFFI
     # @!method cdldoji(price_ohlc)
     # Doji
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdldojistar(price_ohlc)
     # Doji Star
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdldragonflydoji(price_ohlc)
     # Dragonfly Doji
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlengulfing(price_ohlc)
     # Engulfing Pattern
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdleveningdojistar(price_ohlc, penetration: 0.3)
     # Evening Doji Star
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.3)
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1097,7 +1101,7 @@ module TALibFFI
     # @!method cdleveningstar(price_ohlc, penetration: 0.3)
     # Evening Star
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.3)
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1105,147 +1109,147 @@ module TALibFFI
     # @!method cdlgapsidesidewhite(price_ohlc)
     # Up/Down-gap side-by-side white lines
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlgravestonedoji(price_ohlc)
     # Gravestone Doji
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlhammer(price_ohlc)
     # Hammer
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlhangingman(price_ohlc)
     # Hanging Man
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlharami(price_ohlc)
     # Harami Pattern
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlharamicross(price_ohlc)
     # Harami Cross Pattern
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlhighwave(price_ohlc)
     # High-Wave Candle
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlhikkake(price_ohlc)
     # Hikkake Pattern
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlhikkakemod(price_ohlc)
     # Modified Hikkake Pattern
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlhomingpigeon(price_ohlc)
     # Homing Pigeon
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlidentical3crows(price_ohlc)
     # Identical Three Crows
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlinneck(price_ohlc)
     # In-Neck Pattern
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlinvertedhammer(price_ohlc)
     # Inverted Hammer
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlkicking(price_ohlc)
     # Kicking
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlkickingbylength(price_ohlc)
     # Kicking - bull/bear determined by the longer marubozu
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlladderbottom(price_ohlc)
     # Ladder Bottom
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdllongleggeddoji(price_ohlc)
     # Long Legged Doji
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdllongline(price_ohlc)
     # Long Line Candle
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlmarubozu(price_ohlc)
     # Marubozu
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlmatchinglow(price_ohlc)
     # Matching Low
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlmathold(price_ohlc, penetration: 0.5)
     # Mat Hold
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.5)
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1253,7 +1257,7 @@ module TALibFFI
     # @!method cdlmorningdojistar(price_ohlc, penetration: 0.3)
     # Morning Doji Star
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.3)
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1261,7 +1265,7 @@ module TALibFFI
     # @!method cdlmorningstar(price_ohlc, penetration: 0.3)
     # Morning Star
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @param penetration [Float]  Percentage of penetration of a candle within another candle (default: 0.3)
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1269,119 +1273,119 @@ module TALibFFI
     # @!method cdlonneck(price_ohlc)
     # On-Neck Pattern
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlpiercing(price_ohlc)
     # Piercing Pattern
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlrickshawman(price_ohlc)
     # Rickshaw Man
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlrisefall3methods(price_ohlc)
     # Rising/Falling Three Methods
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlseparatinglines(price_ohlc)
     # Separating Lines
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlshootingstar(price_ohlc)
     # Shooting Star
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlshortline(price_ohlc)
     # Short Line Candle
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlspinningtop(price_ohlc)
     # Spinning Top
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlstalledpattern(price_ohlc)
     # Stalled Pattern
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlsticksandwich(price_ohlc)
     # Stick Sandwich
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdltakuri(price_ohlc)
     # Takuri (Dragonfly Doji with very long lower shadow)
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdltasukigap(price_ohlc)
     # Tasuki Gap
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlthrusting(price_ohlc)
     # Thrusting Pattern
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdltristar(price_ohlc)
     # Tristar Pattern
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlunique3river(price_ohlc)
     # Unique 3 River
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlupsidegap2crows(price_ohlc)
     # Upside Gap Two Crows
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method cdlxsidegap3methods(price_ohlc)
     # Upside/Downside Gap Three Methods
     #
-    # @param price_ohlc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_ohlc [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: open, high, low, close
     # @return [Array<Integer>]
     # @raise [TALibError]  If there is an error in function execution
 
@@ -1442,7 +1446,7 @@ module TALibFFI
     # @!method dx(price_hlc, time_period: 14.0)
     # Directional Movement Index
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1518,7 +1522,7 @@ module TALibFFI
     # @!method imi(price_oc, time_period: 14.0)
     # Intraday Momentum Index
     #
-    # @param price_oc [Array<Float>]  TA_IN_PRICE_OPEN, TA_IN_PRICE_CLOSE
+    # @param price_oc [Array<Float>, Array<Float>]  Required price arrays: open, close
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1667,14 +1671,14 @@ module TALibFFI
     # @!method medprice(price_hl)
     # Median Price
     #
-    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param price_hl [Array<Float>, Array<Float>]  Required price arrays: high, low
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method mfi(price_hlcv, time_period: 14.0)
     # Money Flow Index
     #
-    # @param price_hlcv [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE, TA_IN_PRICE_VOLUME
+    # @param price_hlcv [Array<Float>, Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close, volume
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1690,7 +1694,7 @@ module TALibFFI
     # @!method midprice(price_hl, time_period: 14.0)
     # Midpoint Price over period
     #
-    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param price_hl [Array<Float>, Array<Float>]  Required price arrays: high, low
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1734,7 +1738,7 @@ module TALibFFI
     # @!method minus_di(price_hlc, time_period: 14.0)
     # Minus Directional Indicator
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1742,7 +1746,7 @@ module TALibFFI
     # @!method minus_dm(price_hl, time_period: 14.0)
     # Minus Directional Movement
     #
-    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param price_hl [Array<Float>, Array<Float>]  Required price arrays: high, low
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1766,7 +1770,7 @@ module TALibFFI
     # @!method natr(price_hlc, time_period: 14.0)
     # Normalized Average True Range
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1775,14 +1779,14 @@ module TALibFFI
     # On Balance Volume
     #
     # @param real [Array<Float>]  Input values
-    # @param price_v [Array<Float>]  TA_IN_PRICE_VOLUME
+    # @param price_v [Array<Float>]  Required price arrays: volume
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method plus_di(price_hlc, time_period: 14.0)
     # Plus Directional Indicator
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1790,7 +1794,7 @@ module TALibFFI
     # @!method plus_dm(price_hl, time_period: 14.0)
     # Plus Directional Movement
     #
-    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param price_hl [Array<Float>, Array<Float>]  Required price arrays: high, low
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
@@ -1848,7 +1852,7 @@ module TALibFFI
     # @!method sar(price_hl, acceleration: 0.02, maximum: 0.2)
     # Parabolic SAR
     #
-    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param price_hl [Array<Float>, Array<Float>]  Required price arrays: high, low
     # @param acceleration [Float]  Acceleration Factor used up to the Maximum value (default: 0.02)
     # @param maximum [Float]  Acceleration Factor Maximum value (default: 0.2)
     # @return [Array<Float>]
@@ -1857,7 +1861,7 @@ module TALibFFI
     # @!method sarext(price_hl, start_value: 0.0, offset_on_reverse: 0.0, acceleration_init_long: 0.02, acceleration_long: 0.02, acceleration_max_long: 0.2, acceleration_init_short: 0.02, acceleration_short: 0.02, acceleration_max_short: 0.2)
     # Parabolic SAR - Extended
     #
-    # @param price_hl [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW
+    # @param price_hl [Array<Float>, Array<Float>]  Required price arrays: high, low
     # @param start_value [Float]  Start value and direction. 0 for Auto, >0 for Long, <0 for Short (default: 0.0)
     # @param offset_on_reverse [Float]  Percent offset added/removed to initial stop on short/long reversal (default: 0.0)
     # @param acceleration_init_long [Float]  Acceleration Factor initial value for the Long direction (default: 0.02)
@@ -1910,7 +1914,7 @@ module TALibFFI
     # @!method stoch(price_hlc, fast_k_period: 5.0, slow_k_period: 3.0, slow_k_ma_type: 0.0, slow_d_period: 3.0, slow_d_ma_type: 0.0)
     # Stochastic
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param fast_k_period [Integer]  Time period for building the Fast-K line (default: 5.0)
     # @param slow_k_period [Integer]  Smoothing for making the Slow-K line. Usually set to 3 (default: 3.0)
     # @param slow_k_ma_type [Integer]  Type of Moving Average for Slow-K (default: 0.0)
@@ -1924,7 +1928,7 @@ module TALibFFI
     # @!method stochf(price_hlc, fast_k_period: 5.0, fast_d_period: 3.0, fast_d_ma_type: 0.0)
     # Stochastic Fast
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param fast_k_period [Integer]  Time period for building the Fast-K line (default: 5.0)
     # @param fast_d_period [Integer]  Smoothing for making the Fast-D line. Usually set to 3 (default: 3.0)
     # @param fast_d_ma_type [Integer]  Type of Moving Average for Fast-D (default: 0.0)
@@ -1996,7 +2000,7 @@ module TALibFFI
     # @!method trange(price_hlc)
     # True Range
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
 
@@ -2027,14 +2031,14 @@ module TALibFFI
     # @!method typprice(price_hlc)
     # Typical Price
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method ultosc(price_hlc, time_period1: 7.0, time_period2: 14.0, time_period3: 28.0)
     # Ultimate Oscillator
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param time_period1 [Integer]  Number of bars for 1st period. (default: 7.0)
     # @param time_period2 [Integer]  Number of bars fro 2nd period (default: 14.0)
     # @param time_period3 [Integer]  Number of bars for 3rd period (default: 28.0)
@@ -2053,14 +2057,14 @@ module TALibFFI
     # @!method wclprice(price_hlc)
     # Weighted Close Price
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution
 
     # @!method willr(price_hlc, time_period: 14.0)
     # Williams' %R
     #
-    # @param price_hlc [Array<Float>]  TA_IN_PRICE_HIGH, TA_IN_PRICE_LOW, TA_IN_PRICE_CLOSE
+    # @param price_hlc [Array<Float>, Array<Float>, Array<Float>]  Required price arrays: high, low, close
     # @param time_period [Integer]  Number of period (default: 14.0)
     # @return [Array<Float>]
     # @raise [TALibError]  If there is an error in function execution

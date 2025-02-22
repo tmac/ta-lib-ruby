@@ -71,12 +71,39 @@ module TALibFFI
       ]
     end
 
-    def generate_input_documentation(inputs)
-      inputs.map do |input|
+    def generate_input_documentation(inputs) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity
+      inputs.map do |input| # rubocop:disable Metrics/BlockLength
         param_name = TALibFFI.normalize_parameter_name(input["paramName"].to_s)
         flags = TALibFFI.extract_flags(input["flags"], :TA_InputFlags)
-        description = flags.empty? ? "Input values" : flags.join(", ")
-        "    # @param #{param_name} [Array<Float>]  #{description}"
+
+        type = case input["type"]
+               when TALibFFI::TA_PARAM_TYPE[:TA_Input_Price]
+                 array_types = Array.new(flags.length, "Array<Float>")
+                 array_types.join(", ").to_s
+               when TALibFFI::TA_PARAM_TYPE[:TA_Input_Real]
+                 "Array<Float>"
+               when TALibFFI::TA_PARAM_TYPE[:TA_Input_Integer]
+                 "Array<Integer>"
+               end
+
+        description = if input["type"] == TALibFFI::TA_PARAM_TYPE[:TA_Input_Price]
+                        arrays = flags.map do |flag|
+                          {
+                            TA_IN_PRICE_OPEN: "open",
+                            TA_IN_PRICE_HIGH: "high",
+                            TA_IN_PRICE_LOW: "low",
+                            TA_IN_PRICE_CLOSE: "close",
+                            TA_IN_PRICE_VOLUME: "volume",
+                            TA_IN_PRICE_OPENINTEREST: "open interest",
+                            TA_IN_PRICE_TIMESTAMP: "timestamp"
+                          }[flag]
+                        end
+                        "Required price arrays: #{arrays.join(", ")}"
+                      else
+                        flags.empty? ? "Input values" : flags.join(", ")
+                      end
+
+        "    # @param #{param_name} [#{type}]  #{description}"
       end
     end
 
