@@ -1093,7 +1093,7 @@ RSpec.describe TALibFFI do
       it "calculates MidPrice over period" do
         result = described_class.midprice([high_prices, low_prices], time_period: 2)
         expect(result).to be_an(Array)
-        expect(result.length).to eq(1)
+        expect(result.length).to eq(high_prices.length - 1)
       end
 
       it "uses default time period (14) when not specified" do
