@@ -71,7 +71,7 @@ module TALibFFI
       ]
     end
 
-    def generate_input_documentation(inputs) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity
+    def generate_input_documentation(inputs) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
       inputs.map do |input| # rubocop:disable Metrics/BlockLength
         param_name = TALibFFI.normalize_parameter_name(input["paramName"].to_s)
         flags = TALibFFI.extract_flags(input["flags"], :TA_InputFlags)
@@ -79,7 +79,7 @@ module TALibFFI
         type = case input["type"]
                when TALibFFI::TA_PARAM_TYPE[:TA_Input_Price]
                  array_types = Array.new(flags.length, "Array<Float>")
-                 array_types.join(", ").to_s
+                 "Array(#{array_types.join(", ")})"
                when TALibFFI::TA_PARAM_TYPE[:TA_Input_Real]
                  "Array<Float>"
                when TALibFFI::TA_PARAM_TYPE[:TA_Input_Integer]
@@ -100,7 +100,7 @@ module TALibFFI
                         end
                         "Required price arrays: #{arrays.join(", ")}"
                       else
-                        flags.empty? ? "Input values" : flags.join(", ")
+                        "Input values"
                       end
 
         "    # @param #{param_name} [#{type}]  #{description}"

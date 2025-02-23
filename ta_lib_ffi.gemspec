@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
     "CHANGELOG.md",
     "Gemfile",
     "Rakefile",
-    "ta_lib_ffi.gemspec",
+    "ta_lib_ffi.gemspec"
   ]
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }

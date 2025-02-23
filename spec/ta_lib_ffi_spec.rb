@@ -24,7 +24,7 @@ RSpec.describe TALibFFI do
 
   describe "Version and Initialization" do
     it "has a version number" do
-      expect(described_class::VERSION).to eq("0.2.0")
+      expect(described_class::VERSION).to eq("0.3.0")
     end
 
     it "returns a string for TA-Lib version", skip: "Not implemented under Windows" do
@@ -832,9 +832,9 @@ RSpec.describe TALibFFI do
         expect(result[:upper_band].length).to eq([high_prices.length - 19, 0].max)
       end
 
-      it "respects specified time period", skip: "Needs implementation review" do
+      it "respects specified time period" do
         result = described_class.accbands([high_prices, low_prices, close_prices], time_period: 7)
-        expect(result[:upper_band].length).to eq(6)
+        expect(result[:upper_band].length).to eq(high_prices.length - 6)
       end
 
       it "returns empty arrays when period exceeds data length" do
@@ -1114,18 +1114,33 @@ RSpec.describe TALibFFI do
       end
     end
 
-    describe "#sar", skip: "Needs implementation review" do
+    describe "#sar" do
       it_behaves_like "ta_lib_input_validation", :sar
 
-      it "calculates Parabolic SAR" do
-        result = described_class.sar(high_prices, low_prices)
+      it "calculates Parabolic SAR with default parameters" do
+        result = described_class.sar([high_prices, low_prices])
         expect(result).to be_an(Array)
-        expect(result.length).to be <= high_prices.length
+        expect(result.length).to eq(high_prices.length - 1)
       end
 
-      it "handles custom acceleration and maximum parameters" do
-        result = described_class.sar(high_prices, low_prices, acceleration: 0.02, maximum: 0.2)
+      it "calculates Parabolic SAR with custom acceleration and maximum parameters" do
+        result = described_class.sar([high_prices, low_prices], acceleration: 0.02, maximum: 0.2)
         expect(result).to be_an(Array)
+        expect(result.length).to eq(high_prices.length - 1)
+      end
+
+      it "uses default parameters when not specified" do
+        result1 = described_class.sar([high_prices, low_prices])
+        result2 = described_class.sar([high_prices, low_prices], acceleration: 0.02, maximum: 0.2)
+        expect(result1).to eq(result2)
+      end
+
+      it "raises error when acceleration is negative" do
+        expect { described_class.sar([high_prices, low_prices], acceleration: -0.02) }.to raise_error(described_class::TALibError)
+      end
+
+      it "raises error when maximum is negative" do
+        expect { described_class.sar([high_prices, low_prices], maximum: -0.2) }.to raise_error(described_class::TALibError)
       end
     end
 
