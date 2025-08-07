@@ -241,7 +241,7 @@ module TALibFFI
   #
   # @return [Array<String>] Array of group names
   def group_table
-    string_table_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+    string_table_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
     ret_code = TA_GroupTableAlloc(string_table_ptr.ref)
     check_ta_return_code(ret_code)
 
@@ -257,7 +257,7 @@ module TALibFFI
   # @param group [String] The name of the group to get functions for
   # @return [Array<String>] Array of function names in the group
   def function_table(group)
-    string_table_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+    string_table_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
     ret_code = TA_FuncTableAlloc(group, string_table_ptr.ref)
     check_ta_return_code(ret_code)
 
@@ -274,11 +274,11 @@ module TALibFFI
   # @param name [String] The name of the function to get information for
   # @return [Fiddle::CStructEntity] Struct containing function information
   def function_info(name)
-    handle_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+    handle_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
     ret_code = TA_GetFuncHandle(name, handle_ptr.ref)
     check_ta_return_code(ret_code)
 
-    info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+    info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
     ret_code = TA_GetFuncInfo(handle_ptr, info_ptr.ref)
     check_ta_return_code(ret_code)
 
@@ -318,7 +318,7 @@ module TALibFFI
 
     puts "\nInput Parameter Info:"
     func_info["nbInput"].times do |i|
-      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
       ret_code = TA_GetInputParameterInfo(func_info["handle"], i, param_info_ptr.ref)
       check_ta_return_code(ret_code)
       param_info = TA_InputParameterInfo.new(param_info_ptr)
@@ -330,7 +330,7 @@ module TALibFFI
 
     puts "\nOptional Input Parameter Info:"
     func_info["nbOptInput"].times do |i|
-      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
       ret_code = TA_GetOptInputParameterInfo(func_info["handle"], i, param_info_ptr.ref)
       check_ta_return_code(ret_code)
       param_info = TA_OptInputParameterInfo.new(param_info_ptr)
@@ -345,7 +345,7 @@ module TALibFFI
 
     puts "\nOutput Parameter Info:"
     func_info["nbOutput"].times do |i|
-      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
       ret_code = TA_GetOutputParameterInfo(func_info["handle"], i, param_info_ptr.ref)
       check_ta_return_code(ret_code)
       param_info = TA_OutputParameterInfo.new(param_info_ptr)
@@ -386,7 +386,7 @@ module TALibFFI
   # @param params_ptr [Fiddle::Pointer] Pointer to parameter holder
   # @return [Integer] The lookback period
   def calculate_lookback(params_ptr)
-    lookback_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT, Fiddle::RUBY_FREE)
+    lookback_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
     ret_code = TA_GetLookback(params_ptr, lookback_ptr)
     check_ta_return_code(ret_code)
     lookback_ptr[0, Fiddle::SIZEOF_INT].unpack1("l")
@@ -416,7 +416,7 @@ module TALibFFI
   # @param func_name [String] The name of the function
   # @return [Fiddle::Pointer] Pointer to function handle
   def get_function_handle(func_name)
-    handle_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+    handle_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
     ret_code = TA_GetFuncHandle(func_name, handle_ptr.ref)
     check_ta_return_code(ret_code)
     handle_ptr
@@ -427,7 +427,7 @@ module TALibFFI
   # @param handle_ptr [Fiddle::Pointer] Function handle pointer
   # @return [Fiddle::Pointer] Pointer to parameter holder
   def create_parameter_holder(handle_ptr)
-    params_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+    params_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
     ret_code = TA_ParamHolderAlloc(handle_ptr, params_ptr.ref)
     check_ta_return_code(ret_code)
     params_ptr
@@ -472,7 +472,7 @@ module TALibFFI
   # @param array [Array<Numeric>] Array of numbers to prepare
   # @return [Fiddle::Pointer] Pointer to prepared array
   def prepare_double_array(array)
-    array_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_DOUBLE * array.length, Fiddle::RUBY_FREE)
+    array_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_DOUBLE * array.length)
     array.each_with_index do |value, i|
       array_ptr[i * Fiddle::SIZEOF_DOUBLE, Fiddle::SIZEOF_DOUBLE] = [value.to_f].pack("d")
     end
@@ -484,7 +484,7 @@ module TALibFFI
   # @param array [Array<Numeric>] Array of numbers to prepare
   # @return [Fiddle::Pointer] Pointer to prepared array
   def prepare_integer_array(array)
-    array_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT * array.length, Fiddle::RUBY_FREE)
+    array_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT * array.length)
     array.each_with_index do |value, i|
       array_ptr[i * Fiddle::SIZEOF_INT, Fiddle::SIZEOF_INT] = [value.to_i].pack("l")
     end
@@ -534,8 +534,8 @@ module TALibFFI
                    input_arrays[0].length
                  end
 
-    out_begin = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT, Fiddle::RUBY_FREE)
-    out_size = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT, Fiddle::RUBY_FREE)
+    out_begin = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
+    out_size = Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT)
     output_arrays = setup_output_buffers(params_ptr, input_size, func_name)
 
     begin
@@ -564,9 +564,9 @@ module TALibFFI
     func_info[:outputs].each_with_index do |output, index|
       ptr = case output["type"]
             when TA_PARAM_TYPE[:TA_Output_Real]
-              Fiddle::Pointer.malloc(Fiddle::SIZEOF_DOUBLE * size, Fiddle::RUBY_FREE)
+              Fiddle::Pointer.malloc(Fiddle::SIZEOF_DOUBLE * size)
             when TA_PARAM_TYPE[:TA_Output_Integer]
-              Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT * size, Fiddle::RUBY_FREE)
+              Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT * size)
             end
 
       output_ptrs << ptr
@@ -645,7 +645,7 @@ module TALibFFI
   # @return [Array<Fiddle::CStructEntity>] Array of input parameter information
   def collect_input_info(func_info)
     func_info["nbInput"].times.map do |i|
-      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
       TA_GetInputParameterInfo(func_info["handle"], i, param_info_ptr.ref)
       TA_InputParameterInfo.new(param_info_ptr)
     end
@@ -657,7 +657,7 @@ module TALibFFI
   # @return [Array<Fiddle::CStructEntity>] Array of optional input parameter information
   def collect_opt_input_info(func_info)
     func_info["nbOptInput"].times.map do |i|
-      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
       TA_GetOptInputParameterInfo(func_info["handle"], i, param_info_ptr.ref)
       TA_OptInputParameterInfo.new(param_info_ptr)
     end
@@ -669,7 +669,7 @@ module TALibFFI
   # @return [Array<Fiddle::CStructEntity>] Array of output parameter information
   def collect_output_info(func_info)
     func_info["nbOutput"].times.map do |i|
-      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP, Fiddle::RUBY_FREE)
+      param_info_ptr = Fiddle::Pointer.malloc(Fiddle::SIZEOF_VOIDP)
       TA_GetOutputParameterInfo(func_info["handle"], i, param_info_ptr.ref)
       TA_OutputParameterInfo.new(param_info_ptr)
     end
@@ -777,7 +777,7 @@ module TALibFFI
   # @param flags [Integer] Input flags
   def setup_price_inputs(params_ptr, index, price_data, flags)
     required_flags = extract_flags(flags, :TA_InputFlags)
-    data_pointers = Array.new(6) { Fiddle::Pointer.malloc(0, Fiddle::RUBY_FREE) }
+    data_pointers = Array.new(6) { Fiddle::Pointer.malloc(0) }
     required_flags.each_with_index do |flag, i|
       flag_index = TA_FLAGS[:TA_InputFlags].keys.index(flag)
       data_pointers[flag_index] = prepare_double_array(price_data[i]) if required_flags.include?(flag)
