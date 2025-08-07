@@ -564,9 +564,9 @@ module TALibFFI
     func_info[:outputs].each_with_index do |output, index|
       ptr = case output["type"]
             when TA_PARAM_TYPE[:TA_Output_Real]
-              Fiddle::Pointer.malloc(Fiddle::SIZEOF_DOUBLE * size)
+              Fiddle::Pointer.malloc(Fiddle::SIZEOF_DOUBLE * size, Fiddle::RUBY_FREE)
             when TA_PARAM_TYPE[:TA_Output_Integer]
-              Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT * size)
+              Fiddle::Pointer.malloc(Fiddle::SIZEOF_INT * size, Fiddle::RUBY_FREE)
             end
 
       output_ptrs << ptr
